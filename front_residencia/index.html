@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sistema Residência - Gestão de Usuários</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Sessão de Login / Cadastro -->
+  <section id="auth-section" class="card">
+    
+    <!-- Formulário de Login -->
+    <form id="login-form">
+      <h2>Entrar na Conta</h2>
+      <div class="form-group">
+        <label for="login-email">E-mail</label>
+        <input type="email" id="login-email" placeholder="nome@exemplo.com" required />
+      </div>
+      <div class="form-group">
+        <label for="login-senha">Senha</label>
+        <input type="password" id="login-senha" placeholder="••••••••" required />
+      </div>
+      <div class="btn-container">
+        <button type="submit" style="flex: 1;">Entrar</button>
+        <button type="button" id="btn-show-register" class="btn-secondary">Criar Conta</button>
+      </div>
+    </form>
+
+    <!-- Formulário de Registro -->
+    <form id="register-form" class="hidden">
+      <h2>Novo Cadastro</h2>
+      <div class="form-group">
+        <label for="reg-nome">Nome Completo</label>
+        <input type="text" id="reg-nome" placeholder="Seu nome" required />
+      </div>
+      <div class="form-group">
+        <label for="reg-email">E-mail</label>
+        <input type="email" id="reg-email" placeholder="nome@exemplo.com" required />
+      </div>
+      <div class="form-group">
+        <label for="reg-cpf">CPF</label>
+        <input type="text" id="reg-cpf" placeholder="000.000.000-00" required />
+      </div>
+      <div class="form-group">
+        <label for="reg-tel">Telefone</label>
+        <input type="text" id="reg-tel" placeholder="(00) 00000-0000" required />
+      </div>
+      <div class="form-group">
+        <label for="reg-nasc">Data de Nascimento</label>
+        <input type="date" id="reg-nasc" required />
+      </div>
+      <div class="form-group">
+        <label for="reg-senha">Senha</label>
+        <input type="password" id="reg-senha" placeholder="••••••••" required />
+      </div>
+      <div class="form-group">
+        <label for="reg-role">Perfil</label>
+        <select id="reg-role">
+          <option value="USER">USER</option>
+          <option value="ADMIN">ADMIN</option>
+        </select>
+      </div>
+      <div class="btn-container">
+        <button type="submit" style="flex: 1;">Cadastrar</button>
+        <button type="button" id="btn-show-login" class="btn-secondary">Voltar ao Login</button>
+      </div>
+    </form>
+  </section>
+
+  <!-- Painel de Gestão (Dashboard) -->
+  <section id="dashboard-section" class="card hidden">
+    <div class="header-bar">
+      <div>
+        <h2>Painel de Usuários</h2>
+        <p style="font-size: 13px; color: var(--text-muted); margin-top: 2px;">Gerenciamento de contas e permissões</p>
+      </div>
+      <button id="btn-logout" class="btn-danger">Sair</button>
+    </div>
+
+    <!-- Formulário do CRUD -->
+    <form id="user-crud-form">
+      <input type="hidden" id="crud-id" />
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="crud-nome">Nome</label>
+          <input type="text" id="crud-nome" required />
+        </div>
+        <div class="form-group">
+          <label for="crud-email">E-mail</label>
+          <input type="email" id="crud-email" required />
+        </div>
+        <div class="form-group">
+          <label for="crud-cpf">CPF</label>
+          <input type="text" id="crud-cpf" required />
+        </div>
+        <div class="form-group">
+          <label for="crud-tel">Telefone</label>
+          <input type="text" id="crud-tel" required />
+        </div>
+        <div class="form-group" id="group-crud-nasc">
+          <label for="crud-nasc">Data de Nascimento</label>
+          <input type="date" id="crud-nasc" />
+        </div>
+        <div class="form-group">
+          <label for="crud-senha" id="label-crud-senha">Senha</label>
+          <input type="password" id="crud-senha" placeholder="Digite a senha" />
+        </div>
+        <div class="form-group" id="group-crud-role">
+          <label for="crud-role">Perfil</label>
+          <select id="crud-role">
+            <option value="USER">USER</option>
+            <option value="ADMIN">ADMIN</option>
+          </select>
+        </div>
+      </div>
+      <div class="btn-container">
+        <button type="submit" id="btn-save-user">Cadastrar Usuário</button>
+        <button type="button" id="btn-cancel-edit" class="btn-secondary hidden">Cancelar</button>
+      </div>
+    </form>
+
+    <!-- Tabela com visual moderno -->
+    <div class="table-responsive">
+      <table>
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>E-mail</th>
+            <th>Telefone</th>
+            <th>Perfil</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody id="usuarios-table-body"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
