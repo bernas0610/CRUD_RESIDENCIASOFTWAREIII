@@ -1,18 +1,21 @@
 package com.crud_.residencia.controller;
 
+import com.crud_.residencia.domain.Usuario;
 import com.crud_.residencia.dtos.UsuarioDTO;
 import com.crud_.residencia.dtos.UsuarioResponseDTO;
 import com.crud_.residencia.services.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.UUID;
 
+@CrossOrigin(origins = "*") // <-- Adicione esta linha também
 @RestController
-@RequestMapping("api/v1/usuarios")
+@RequestMapping("/usuarios")
 public class UsuarioController {
 
     @Autowired
@@ -26,6 +29,12 @@ public class UsuarioController {
     @GetMapping("/{id}")
     public ResponseEntity<UsuarioResponseDTO> buscarPorId(@PathVariable UUID id) {
         return ResponseEntity.ok(service.buscarPorId(id));
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UsuarioResponseDTO> getMeuPerfil(@AuthenticationPrincipal Usuario usuarioLogado) {
+        // Retorna apenas os dados do usuário autenticado no token
+        return ResponseEntity.ok(new UsuarioResponseDTO(usuarioLogado));
     }
 
     @PutMapping("/{id}")
