@@ -1,90 +1,70 @@
 package com.crud_.residencia.services;
 
-
 import com.crud_.residencia.domain.Usuario;
 import com.crud_.residencia.dtos.UsuarioDTO;
+import com.crud_.residencia.dtos.UsuarioResponseDTO;
 import com.crud_.residencia.repositories.UsuarioRepository;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.EntityNotFoundException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
 @Service
-@AllArgsConstructor
-
 public class UsuarioService {
 
-    private final UsuarioRepository usuarioRepository;
+    @Autowired
+    private UsuarioRepository repository;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
-    public void cadastrarUsuario(Usuario usuario){
+    public List<UsuarioResponseDTO> listarTodos() {
+        return repository.findAll()
+                .stream()
+                .map(UsuarioResponseDTO::new)
+                .toList();
+    }
 
-        if (usuario.getNome() == null || usuario.getCpf().isEmpty() || usuario.getEmail().isEmpty() || usuario.getTelefone().isEmpty() ){
-            throw new RuntimeException("Preencha todos os campos obrigatórios");
+    public UsuarioResponseDTO buscarPorId(UUID id) {
+        Usuario usuario = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado com ID: " + id));
+        return new UsuarioResponseDTO(usuario);
+    }
+
+    @Transactional
+    public UsuarioResponseDTO atualizar(UUID id, UsuarioDTO dto) {
+        Usuario usuario = repository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Usuário não encontrado com ID: " + id));
+
+        if (dto.nome() != null && !dto.nome().isBlank()) {
+            usuario.setNome(dto.nome());
         }
 
+        if (dto.telefone() != null && !dto.telefone().isBlank()) {
+            usuario.setTelefone(dto.telefone());
+        }
 
+        if (dto.dataNascimento() != null) {
+            usuario.setDataNascimento(dto.dataNascimento());
+        }
 
+        if (dto.senha() != null && !dto.senha().isBlank()) {
+            usuario.setSenha(passwordEncoder.encode(dto.senha()));
+        }
 
-
-        usuarioRepository.saveAndFlush(usuario);
+        Usuario atualizado = repository.save(usuario);
+        return new UsuarioResponseDTO(atualizado);
     }
 
-    public UsuarioDTO buscarUsuarioPorId(UUID id){
-
-        Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(
-                        ()->  new RuntimeException("USUARIO NAO ENCONTRADO!")
-                );
-
-        return new UsuarioDTO(
-                usuario.getId(),
-                usuario.getCpf(),
-                usuario.getNome(),
-                usuario.getEmail(),
-                usuario.getTelefone(),
-                usuario.getDataNascimento(),
-                usuario.getDataCadastro()
-
-        );
-
-
-
-
+    @Transactional
+    public void deletar(UUID id) {
+        if (!repository.existsById(id)) {
+            throw new EntityNotFoundException("Usuário não encontrado com ID: " + id);
+        }
+        repository.deleteById(id);
     }
-
-    public List<Usuario> listarUsuarios(){
-
-        return usuarioRepository.findAll();
-    }
-
-    public void atualizarPorId(UUID id , Usuario usuario){
-
-        Usuario usuarioEntity = usuarioRepository.findById(id).orElseThrow(
-                () -> new RuntimeException("Id nao encontrado")
-        );
-        Usuario usuarioAtualizado = Usuario.builder()
-                .email(usuario.getEmail() != null ? usuario.getEmail() : usuarioEntity.getEmail())
-                .nome(usuario.getNome() != null ? usuario.getNome() : usuarioEntity.getNome())
-                .id(usuarioEntity.getId())
-                .telefone(usuario.getTelefone() != null ? usuario.getTelefone() : usuarioEntity.getTelefone())
-                .cpf(usuario.getCpf() != null ? usuario.getCpf() : usuarioEntity.getCpf())
-                .dataCadastro(usuario.getDataCadastro() != null ? usuario.getDataCadastro() : usuarioEntity.getDataCadastro())
-                .dataNascimento(usuario.getDataNascimento() != null ? usuario.getDataNascimento() : usuarioEntity.getDataNascimento())
-                .build();
-
-        usuarioRepository.saveAndFlush(usuarioAtualizado);
-    }
-
-    public void deletarUsuario(UUID id){
-        Usuario usuario = usuarioRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("USUARIO NAO ENCONTRADO!"));
-        usuarioRepository.delete(usuario);
-    }
-
-
-
-
 }
